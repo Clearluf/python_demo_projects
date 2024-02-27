@@ -26,7 +26,7 @@ def query_stock(code):
     result = (
         "股票名称: "
         + res_list[0]
-        + " 当前价格: "
+        + " 最新价格: "
         + res_list[3]
         + " 今日收益率: "
         + str(
@@ -65,11 +65,18 @@ tray_icon.show()
 
 def func():
     global flag_exit
+
+    result = ''
+    stocks = json.loads(open("stocks.json", encoding="utf-8").read())
+    for stock in stocks:
+        code = stock["code"]
+        result = result+query_stock(code).split("今日收益率")[0]+"\n"
+
     today = datetime.now().date()
     # 判断今日是否是工作日
     if today.weekday() > 5:
         while not flag_exit:
-            tray_icon.setToolTip("休息日,暂停更新")
+            tray_icon.setToolTip("休息日,暂停更新\n"+result)
             time.sleep(5)
     else:
         now = datetime.now()
@@ -82,7 +89,7 @@ def func():
             or (afternoon_start <= now.time() < afternoon_end)
         ):
             while not flag_exit:
-                tray_icon.setToolTip("闭市了,别看了")
+                tray_icon.setToolTip("闭市了,别看了\n"+result)
                 time.sleep(5)
     while not flag_exit:
         result = ''
