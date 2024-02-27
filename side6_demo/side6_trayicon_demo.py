@@ -1,10 +1,13 @@
-from PySide6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
-from PySide6.QtGui import QIcon, QAction
+import json
 import sys
 import threading
 import time
+from datetime import datetime
+from datetime import time as Time
+
 import requests
-from datetime import datetime, time as Time
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
 app = QApplication(sys.argv)
 
@@ -82,10 +85,12 @@ def func():
                 tray_icon.setToolTip("闭市了,别看了")
                 time.sleep(5)
     while not flag_exit:
-        result1 = query_stock("sh601360")
-        result2 = query_stock("sz300003")
-        result3 = query_stock("sh600633")
-        tray_icon.setToolTip(result1 + "\n" + result2 + "\n" + result3)
+        result = ''
+        stocks = json.loads(open("stocks.json", encoding="utf-8").read())
+        for stock in stocks:
+            code = stock["code"]
+            result = result+query_stock(code)+"\n"
+        tray_icon.setToolTip(result)
         time.sleep(5)
 
 
